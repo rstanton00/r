@@ -13,7 +13,10 @@ require(stats)
 rm(list=ls())
 
 #linux
-setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+
+#mac
+setwd('/Users/rstanton/Documents/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
