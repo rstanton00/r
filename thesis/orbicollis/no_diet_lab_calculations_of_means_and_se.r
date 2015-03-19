@@ -72,3 +72,7 @@ lsmeans(residpremass.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=diet_lab_data$resid_premass_calculated, x=diet_lab_data$Treatment, method="scheffe")
+
+#test for effect of starvation treatment
+model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
+effect_of_treatment <- Anova(model, type=c(3))
