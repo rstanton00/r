@@ -74,12 +74,12 @@ lsmeans(residpremass.rg, "Treatment")
 pairw.anova(y=diet_lab_data$resid_premass_calculated, x=diet_lab_data$Treatment, method="scheffe")
 
 #test for effect of starvation treatment
-df <- subset(diet_lab_data, select = c("SubjectID", "Sex", "Treatment", "Measured", "ln_premass_mg", "ln_postmass_mg"))
+df <- subset(diet_lab_data, select = c("BeetleID", "Sex", "Treatment", "Measured", "ln_premass_mg", "ln_postmass_mg"))
 
-dfL <- reshape(df, varying = list(5:6), idvar = "SubjectID", direction = "long", v.names = "ln_mass_mg")
+dfL <- reshape(df, varying = list(5:6), idvar = "BeetleID", direction = "long", v.names = "ln_mass_mg")
 dfL$time <- factor(dfL$time, levels = 1:2, labels = c("pre", "post"))
 head(dfL); tail(dfL)
-
+aovMod <- aov(ln_mass_mg ~ Sex * Treatment * Measured * time + Error(BeetleID/time), data = dfL)
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
