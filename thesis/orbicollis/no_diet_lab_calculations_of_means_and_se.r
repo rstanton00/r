@@ -1,8 +1,9 @@
 #if you haven't already
 #install.packages("dplyr")
 #library(dplyr)
-#install.packages("car")
-#install.packages("asbio")
+install.packages("car")
+install.packages("asbio")
+install.packages("lsmeans")
 library(car)
 library(lsmeans)
 library(asbio)
@@ -13,10 +14,10 @@ require(stats)
 rm(list=ls())
 
 #linux
-#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-setwd('/Users/rstanton/Documents/thesis/N orbicollis data/Data Analysis/csv')
+#setwd('/Users/rstanton/Documents/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
@@ -107,6 +108,7 @@ dfL$time <- factor(dfL$time, levels = 1:2, labels = c("pre", "post"))
 head(dfL); tail(dfL)
 aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(BeetleID/time), data = dfL)
 
+newData <- diet_lab_data[ which(diet_lab_data$Measured=='PO_P'), ]
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
