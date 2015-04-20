@@ -108,7 +108,22 @@ dfL$time <- factor(dfL$time, levels = 1:2, labels = c("pre", "post"))
 head(dfL); tail(dfL)
 aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(BeetleID/time), data = dfL)
 
+#set up new dataset that only examines phenoloxidase/protein data for analysis
 newData <- diet_lab_data[ which(diet_lab_data$Measured=='PO_P'), ]
+
+#protein
+model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = diet_lab_data, na.action=na.omit)
+residpremass.anova <- Anova(model, type=c(3))
+residpremass.rg <- ref.grid(model)
+lsmeans(residpremass.rg, "Sex")
+lsmeans(residpremass.rg, "Measured")
+lsmeans(residpremass.rg, "Treatment")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=diet_lab_data$resid_premass_calculated, x=diet_lab_data$Treatment, method="scheffe")
+
+model sqrt_P=sex Treatment sex*treatment /ss3;
+lsmeans sex Treatment /ADJUST=SCHEFFE pdiff;
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
