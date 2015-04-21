@@ -119,7 +119,16 @@ lsmeans(protein.rg, "Sex")
 lsmeans(protein.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
-pairw.anova(y=newData$resid_premass_calculated, x=newData$Treatment, method="scheffe")
+pairw.anova(y=newData$protein, x=newData$Treatment, method="scheffe")
+
+#phenoloxidase
+model <- lm(ln_po ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
+protein <- Anova(model, type=c(3))
+po.rg <- ref.grid(model)
+lsmeans(po.rg, "Treatment")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
