@@ -1,9 +1,10 @@
-#if you haven't already
+#verify that necessary packages are installed
+list.of.packages <- c("ggplot2", "Rcpp", "car", "asbio", "lsmeans")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 #install.packages("dplyr")
 #library(dplyr)
-install.packages("car")
-install.packages("asbio")
-install.packages("lsmeans")
 library(car)
 library(lsmeans)
 library(asbio)
