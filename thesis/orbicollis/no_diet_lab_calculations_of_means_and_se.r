@@ -64,6 +64,8 @@ elytra.anova <- Anova(model, type=c(3))
 elytra.rg <- ref.grid(model)
 lsmeans(elytra.rg, "Measured")
 
+#BEGIN EXAM HERE
+
 #pre-condition calculated
 model <- lm(resid_premass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 residpremass.anova <- Anova(model, type=c(3))
