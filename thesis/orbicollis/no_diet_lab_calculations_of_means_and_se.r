@@ -86,7 +86,7 @@ lsmeans(postmass.rg, "Measured")
 lsmeans(postmass.rg, "Treatment")
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=diet_lab_data$ln_postmass, x=diet_lab_data$Treatment, method="scheffe")
-
+#touch
 #post condition calculated
 model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 residpostmass.anova <- Anova(model, type=c(3))
