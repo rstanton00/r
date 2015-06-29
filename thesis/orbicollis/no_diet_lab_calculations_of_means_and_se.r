@@ -1,16 +1,17 @@
 #verify that necessary packages are installed
-list.of.packages <- c("ggplot2", "Rcpp", "car", "asbio", "lsmeans")
+list.of.packages <- c("ggplot2", "Rmisc", "Rcpp", "car", "asbio", "lsmeans", "dplyr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
-#install.packages("dplyr")
-#library(dplyr)
+library(dplyr)
 library(car)
 library(lsmeans)
-library(asbio)
+library(ggplot2)
+library(Rmisc)
 require(graphics)
 require(utils)
 require(stats)
+#library(asbio)
 
 rm(list=ls())
 
@@ -63,6 +64,19 @@ model <- lm(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measure
 elytra.anova <- Anova(model, type=c(3))
 elytra.rg <- ref.grid(model)
 lsmeans(elytra.rg, "Measured")
+
+#plot elytra length box plots with SE bars
+elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
+
+
+#ggplot(elytraSummary, aes(x=Measured, y=ln_elytra, fill=Sex)) +
+#  geom_bar(position=position_dodge(), stat="identity") +
+#  geom_errorbar(aes(ymin=ln_elytra-se, ymax=ln_elytra+se), width = .2, position=position_dodge(.9))
+
+#elytraSummary <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Sex", "Treatment", "Measured"))
+#ggplot(elytraSummary, aes(x=c(Measured, Treatment), y=ElytraLength_mm, fill=Sex)) +
+#  geom_bar(position=position_dodge(), stat="identity") +
+#  geom_errorbar(aes(ymin=ElytraLength_mm-se, ymax=ElytraLength_mm+se), width = .2, position=position_dodge(.9))
 
 #BEGIN EXAM HERE
 
