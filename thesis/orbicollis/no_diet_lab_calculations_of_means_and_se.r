@@ -3,11 +3,11 @@ list.of.packages <- c("ggplot2", "Rmisc", "Rcpp", "car", "asbio", "lsmeans", "dp
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+library(Rmisc)
 library(dplyr)
 library(car)
 library(lsmeans)
 library(ggplot2)
-library(Rmisc)
 require(graphics)
 require(utils)
 require(stats)
@@ -67,7 +67,9 @@ lsmeans(elytra.rg, "Measured")
 
 #plot elytra length box plots with SE bars
 elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
-
+ggplot(elSum, aes(x=Measured, y=ln_elytra, fill=interaction(Treatment, Sex))) +
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=ln_elytra-se, ymax=ln_elytra+se), width = .2, position=position_dodge(.9))
 
 #ggplot(elytraSummary, aes(x=Measured, y=ln_elytra, fill=Sex)) +
 #  geom_bar(position=position_dodge(), stat="identity") +
