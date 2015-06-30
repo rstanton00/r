@@ -67,20 +67,30 @@ lsmeans(elytra.rg, "Measured")
 
 #plot elytra length box plots with SE bars
 elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
-ggplot(elSum, aes(x=Measured, y=ln_elytra, fill=interaction(Treatment, Sex))) +
-  geom_bar(position=position_dodge(), stat="identity") +
-  geom_errorbar(aes(ymin=ln_elytra-se, ymax=ln_elytra+se), width = .2, position=position_dodge(.9))
+ggplot(diet_lab_data, aes(x=Measured, y=ln_elytra, col=Sex)) +
+  geom_boxplot() +
+  facet_wrap(~ Treatment)
 
-#ggplot(elytraSummary, aes(x=Measured, y=ln_elytra, fill=Sex)) +
-#  geom_bar(position=position_dodge(), stat="identity") +
+ggplot(diet_lab_data, aes(x=Measured, y=ElytraLength_mm, color=Sex)) +
+  geom_boxplot() +
+  facet_wrap(~ Treatment)
+
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
+
+#define the top and bottom of the errorbars
+limits <- aes(ymax = ElytraLength_mm + elSum$se, ymin = ElytraLength_mm - elSum$se)
+
+#create plot
+ggplot(elSum, aes(x=Measured, y=ElytraLength_mm)) +
+  geom_point() + geom_errorbar(limits, width=0.2) + facet_wrap(~ Sex + Treatment)
+
+ggplot(elSum, aes(x=Measured, y=ElytraLength_mm, color=Sex)) +
+  geom_point() + geom_errorbar(limits, width=0.2) + facet_wrap(~ Sex + Treatment)
+
+#ggplot(elSum, aes(x=Treatment, y=ln_elytra, col=interaction(Sex, Measured))) +
+#  geom_boxplot(position=position_dodge(), stat="identity") +
 #  geom_errorbar(aes(ymin=ln_elytra-se, ymax=ln_elytra+se), width = .2, position=position_dodge(.9))
-
-#elytraSummary <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Sex", "Treatment", "Measured"))
-#ggplot(elytraSummary, aes(x=c(Measured, Treatment), y=ElytraLength_mm, fill=Sex)) +
-#  geom_bar(position=position_dodge(), stat="identity") +
-#  geom_errorbar(aes(ymin=ElytraLength_mm-se, ymax=ElytraLength_mm+se), width = .2, position=position_dodge(.9))
-
-#BEGIN EXAM HERE
 
 #pre-condition calculated
 model <- lm(resid_premass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
