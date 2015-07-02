@@ -65,16 +65,7 @@ elytra.anova <- Anova(model, type=c(3))
 elytra.rg <- ref.grid(model)
 lsmeans(elytra.rg, "Measured")
 
-#plot elytra length box plots with SE bars
-elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
-ggplot(diet_lab_data, aes(x=Measured, y=ln_elytra, col=Sex)) +
-  geom_boxplot() +
-  facet_wrap(~ Treatment)
-
-ggplot(diet_lab_data, aes(x=Measured, y=ElytraLength_mm, color=Sex)) +
-  geom_boxplot() +
-  facet_wrap(~ Treatment)
-
+#plot elytra length point plots with SE bars
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
 
@@ -82,15 +73,20 @@ elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Mea
 limits <- aes(ymax = ElytraLength_mm + elSum$se, ymin = ElytraLength_mm - elSum$se)
 
 #create plot
-ggplot(elSum, aes(x=Measured, y=ElytraLength_mm)) +
-  geom_point() + geom_errorbar(limits, width=0.2) + facet_wrap(~ Sex + Treatment)
+ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm, pch=Sex)) +
+  geom_point(position=position_dodge(width=0.5), size = 5) +
+  geom_errorbar(limits, position=position_dodge(width=0.5)) +
+  facet_wrap(~ Treatment)
 
-ggplot(elSum, aes(x=Measured, y=ElytraLength_mm, color=Sex)) +
-  geom_point() + geom_errorbar(limits, width=0.2) + facet_wrap(~ Sex + Treatment)
+#alternately, six different plots
+#ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm), group=Sex) +
+#  geom_point() + geom_errorbar(limits, width=0.1) + facet_wrap(~ Treatment + Sex)
 
-#ggplot(elSum, aes(x=Treatment, y=ln_elytra, col=interaction(Sex, Measured))) +
-#  geom_boxplot(position=position_dodge(), stat="identity") +
-#  geom_errorbar(aes(ymin=ln_elytra-se, ymax=ln_elytra+se), width = .2, position=position_dodge(.9))
+#plot elytra length box plots with SE bars
+#elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
+#ggplot(diet_lab_data, aes(x=Measured, y=ln_elytra, col=Sex)) +
+#  geom_boxplot() +
+#  facet_wrap(~ Treatment)
 
 #pre-condition calculated
 model <- lm(resid_premass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
