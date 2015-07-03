@@ -1,13 +1,14 @@
 #verify that necessary packages are installed
-list.of.packages <- c("ggplot2", "Rcpp", "car", "asbio", "lsmeans")
+list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
-#install.packages("dplyr")
-#library(dplyr)
+library(Rmisc)
+library(dplyr)
 library(car)
 library(lsmeans)
 library(asbio)
+library(ggplot2)
 require(graphics)
 require(utils)
 require(stats)
@@ -64,7 +65,33 @@ elytra.anova <- Anova(model, type=c(3))
 elytra.rg <- ref.grid(model)
 lsmeans(elytra.rg, "Measured")
 
-#BEGIN EXAM HERE
+#plot elytra length point plots with SE bars
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
+
+#define the top and bottom of the errorbars
+limits <- aes(ymax = ElytraLength_mm + elSum$se, ymin = ElytraLength_mm - elSum$se)
+
+#create plot
+#relabel treatments
+levels(elSum$Treatment) <- c("Ad libitum", "3 days", "5 days")
+
+ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm, pch=Sex)) +
+  geom_point(position=position_dodge(width=0.5), size = 5) +
+  geom_errorbar(limits, position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("PO_P", "Melaniz"), labels=c("PO", "Melanization")) +
+  facet_wrap(~ Treatment) +
+  ylab("Elytra Length (mm)") + xlab("")
+
+#alternately, six different plots
+#ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm), group=Sex) +
+#  geom_point() + geom_errorbar(limits, width=0.1) + facet_wrap(~ Treatment + Sex)
+
+#plot elytra length box plots with SE bars
+#elSum <- summarySE(diet_lab_data, measurevar="ln_elytra", groupvars=c("Measured", "Treatment", "Sex"))
+#ggplot(diet_lab_data, aes(x=Measured, y=ln_elytra, col=Sex)) +
+#  geom_boxplot() +
+#  facet_wrap(~ Treatment)
 
 #pre-condition calculated
 model <- lm(resid_premass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
@@ -86,7 +113,7 @@ lsmeans(postmass.rg, "Measured")
 lsmeans(postmass.rg, "Treatment")
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=diet_lab_data$ln_postmass, x=diet_lab_data$Treatment, method="scheffe")
-#touch
+
 #post condition calculated
 model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 residpostmass.anova <- Anova(model, type=c(3))
