@@ -75,13 +75,21 @@ limits <- aes(ymax = ElytraLength_mm + elSum$se, ymin = ElytraLength_mm - elSum$
 #create plot
 #relabel treatments
 levels(elSum$Treatment) <- c("Ad libitum", "3 days", "5 days")
+levels(elSum$Treatment) <- c("a", "b", "c")
 
-ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm, pch=Sex)) +
+ggplot(elSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex)) +
   geom_point(position=position_dodge(width=0.5), size = 5) +
   geom_errorbar(limits, position=position_dodge(width=0.5)) +
-  scale_x_discrete(breaks = c("PO_P", "Melaniz"), labels=c("PO", "Melanization")) +
-  facet_wrap(~ Treatment) +
-  ylab("Elytra Length (mm)") + xlab("")
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  facet_wrap(~ Measured) +
+  ylab("Elytra Length (mm)") + xlab("Treatment")
+
+#ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm, pch=Sex)) +
+#  geom_point(position=position_dodge(width=0.5), size = 5) +
+#  geom_errorbar(limits, position=position_dodge(width=0.5)) +
+#  scale_x_discrete(breaks = c("PO_P", "Melaniz"), labels=c("PO", "Melanization")) +
+#  facet_wrap(~ Treatment) +
+#  ylab("Elytra Length (mm)") + xlab("")
 
 #alternately, six different plots
 #ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm), group=Sex) +
