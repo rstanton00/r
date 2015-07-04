@@ -1,3 +1,7 @@
+#update packages as necessary
+require(utils)
+update.packages(ask=FALSE)
+
 #verify that necessary packages are installed
 list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -9,17 +13,16 @@ library(car)
 library(lsmeans)
 library(asbio)
 library(ggplot2)
-require(graphics)
-require(utils)
 require(stats)
+require(graphics)
 
 rm(list=ls())
 
 #linux
-#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
+#setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
@@ -69,17 +72,11 @@ lsmeans(elytra.rg, "Measured")
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
 
-#define the top and bottom of the errorbars
-limits <- aes(ymax = ElytraLength_mm + elSum$se, ymin = ElytraLength_mm - elSum$se)
-
-#create plot
-#relabel treatments
-levels(elSum$Treatment) <- c("Ad libitum", "3 days", "5 days")
-levels(elSum$Treatment) <- c("a", "b", "c")
-
-ggplot(elSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex)) +
+ggplot(elSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
+                  ymax=ElytraLength_mm + elSum$se,
+                  ymin=ElytraLength_mm - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 5) +
-  geom_errorbar(limits, position=position_dodge(width=0.5)) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Elytra Length (mm)") + xlab("Treatment")
@@ -112,6 +109,20 @@ lsmeans(residpremass.rg, "Treatment")
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=diet_lab_data$resid_premass_calculated, x=diet_lab_data$Treatment, method="scheffe")
 plot(pairw.anova(y=diet_lab_data$resid_premass_calculated, x=diet_lab_data$Treatment, method="scheffe"))
+
+#plot pre condition
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="resid_premass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
+#create plot
+ggplot(elSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
+                  ymax=resid_premass_calculated + elSum$se,
+                  ymin=resid_premass_calculated - elSum$se)) +
+  geom_point(position=position_dodge(width=0.5), size = 5) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  facet_wrap(~ Measured) +
+  ylab("Body Mass (mg)") + xlab("Treatment")
+
 
 #post mass
 model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
