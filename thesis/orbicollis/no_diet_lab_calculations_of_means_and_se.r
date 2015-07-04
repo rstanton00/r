@@ -146,6 +146,19 @@ lsmeans(residpostmass.rg, "Treatment")
 pairw.anova(y=diet_lab_data$resid_postmass_calculated, x=diet_lab_data$Treatment, method="scheffe")
 plot(pairw.anova(y=diet_lab_data$resid_postmass_calculated, x=diet_lab_data$Treatment, method="scheffe"))
 
+#plot post condition
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
+#create plot
+ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
+                  ymax=resid_postmass_calculated + elSum$se,
+                  ymin=resid_postmass_calculated - elSum$se)) +
+  geom_point(position=position_dodge(width=0.5), size = 5) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  facet_wrap(~ Measured) +
+  ylab("Body Mass (mg)") + xlab("Treatment")
+
 #test for effect of starvation treatment
 df <- subset(diet_lab_data, select = c("BeetleID", "Sex", "Treatment", "Measured", "ln_premass_mg", "ln_postmass_mg"))
 dfL <- reshape(df, varying = list(5:6), idvar = "BeetleID", direction = "long", v.names = "ln_mass_mg")
