@@ -173,6 +173,18 @@ dfL$time <- factor(dfL$time, levels = 1:2, labels = c("pre", "post"))
 head(dfL); tail(dfL)
 aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(BeetleID/time), data = dfL)
 
+#plot protein avg
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Treatment", "Sex"))
+#create plot
+ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
+                  ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
+                  ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
+  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  ylab("Body Mass (mg)") + xlab("Treatment")
+
 #set up new dataset that only examines phenoloxidase/protein data for analysis
 newData <- diet_lab_data[ which(diet_lab_data$Measured=='PO_P'), ]
 
@@ -187,6 +199,18 @@ lsmeans(protein.rg, "Treatment")
 pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
 plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"))
 
+#plot phenoloxidase avg data
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="zPO_avg_abs_min", groupvars=c("Measured", "Treatment", "Sex"))
+#create plot
+ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
+                  ymax=zPO_avg_abs_min + elSum$se,
+                  ymin=zPO_avg_abs_min - elSum$se)) +
+  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  ylab("Body Mass (mg)") + xlab("Treatment")
+
 #phenoloxidase
 model <- lm(ln_po ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
@@ -196,6 +220,19 @@ lsmeans(po.rg, "Treatment")
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
 plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"))
+
+#plot melanization avg data
+#create SE measurements
+elSum <- summarySE(diet_lab_data, measurevar="z_AGV", groupvars=c("Measured", "Treatment", "Sex"))
+#create plot
+ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
+                  ymax=z_AGV + elSum$se,
+                  ymin=z_AGV - elSum$se)) +
+  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5)) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_y_continuous(trans = "reverse") +
+  ylab("Body Mass (mg)") + xlab("Treatment")
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
