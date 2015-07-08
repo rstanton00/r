@@ -11,7 +11,7 @@ library(Rmisc)
 library(dplyr)
 library(car)
 library(lsmeans)
-#library(asbio)
+library(asbio)
 library(ggplot2)
 require(stats)
 require(graphics)
@@ -19,10 +19,10 @@ require(graphics)
 rm(list=ls())
 
 #linux
-#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
+#setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
@@ -121,7 +121,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
-  ylab("Body Mass (mg)") + xlab("Treatment")
+  ylab("Pre Body Mass (mg)") + xlab("Treatment")
 
 
 #post mass
@@ -157,7 +157,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
-  ylab("Body Mass (mg)") + xlab("Treatment")
+  ylab("Post Body Mass (mg)") + xlab("Treatment")
 
 #test for effect of starvation treatment
 df <- subset(diet_lab_data, select = c("BeetleID", "Sex", "Treatment", "Measured", "ln_premass_mg", "ln_postmass_mg"))
@@ -183,7 +183,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
   geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
-  ylab("Body Mass (mg)") + xlab("Treatment")
+  ylab("Protein (mg/ml)") + xlab("Treatment")
 
 #set up new dataset that only examines phenoloxidase/protein data for analysis
 newData <- diet_lab_data[ which(diet_lab_data$Measured=='PO_P'), ]
@@ -209,7 +209,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
   geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
-  ylab("Body Mass (mg)") + xlab("Treatment")
+  ylab("Phenoloxidase (abs/min)") + xlab("Treatment")
 
 #phenoloxidase
 model <- lm(ln_po ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
@@ -232,7 +232,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.5)) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   scale_y_continuous(trans = "reverse") +
-  ylab("Body Mass (mg)") + xlab("Treatment")
+  ylab("Average Grey Value") + xlab("Treatment")
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
