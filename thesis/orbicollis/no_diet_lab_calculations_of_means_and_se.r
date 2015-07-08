@@ -197,7 +197,8 @@ lsmeans(protein.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
-plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"))
+plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Protein",
+     xlab="Treatment", ylab="Protein mg/ml")
 
 #plot phenoloxidase avg data
 #create SE measurements
@@ -219,7 +220,8 @@ lsmeans(po.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
-plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"))
+plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Phenoloxidase",
+     xlab="Treatment", ylab="Phenoloxidase")
 
 #plot melanization avg data
 #create SE measurements
