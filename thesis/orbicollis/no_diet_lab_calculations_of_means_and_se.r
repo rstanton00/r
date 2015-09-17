@@ -75,8 +75,8 @@ elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Mea
 ggplot(elSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                   ymax=ElytraLength_mm + elSum$se,
                   ymin=ElytraLength_mm - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Elytra Length (mm)") + xlab("Treatment")
@@ -117,8 +117,8 @@ elSum <- summarySE(diet_lab_data, measurevar="resid_premass_calculated", groupva
 ggplot(elSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
                   ymax=resid_premass_calculated + elSum$se,
                   ymin=resid_premass_calculated - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Pre Body Mass (mg)") + xlab("Treatment")
@@ -153,8 +153,8 @@ elSum <- summarySE(diet_lab_data, measurevar="resid_postmass_calculated", groupv
 ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                   ymax=resid_postmass_calculated + elSum$se,
                   ymin=resid_postmass_calculated - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Post Body Mass (mg)") + xlab("Treatment")
@@ -180,8 +180,8 @@ elSum <- summarySE(diet_lab_data, measurevar="z_Protein_avg_adjusted_mg_ml", gro
 ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                   ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
                   ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   ylab("Protein (mg/ml)") + xlab("Treatment")
 
@@ -207,8 +207,8 @@ elSum <- summarySE(diet_lab_data, measurevar="zPO_avg_abs_min", groupvars=c("Mea
 ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                   ymax=zPO_avg_abs_min + elSum$se,
                   ymin=zPO_avg_abs_min - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Treatment")
 
@@ -230,8 +230,8 @@ elSum <- summarySE(diet_lab_data, measurevar="z_AGV", groupvars=c("Measured", "T
 ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymax=z_AGV + elSum$se,
                   ymin=z_AGV - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 5, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5)) +
+  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   scale_y_continuous(trans = "reverse") +
   ylab("Average Grey Value") + xlab("Treatment")
