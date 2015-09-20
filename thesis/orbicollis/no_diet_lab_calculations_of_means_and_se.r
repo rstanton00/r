@@ -3,7 +3,7 @@ require(utils)
 update.packages(ask=FALSE)
 
 #verify that necessary packages are installed
-list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr")
+list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -13,16 +13,17 @@ library(car)
 library(lsmeans)
 library(asbio)
 library(ggplot2)
+library(gridExtra)
 require(stats)
 require(graphics)
 
 rm(list=ls())
 
 #linux
-setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-#setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
+setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
@@ -149,6 +150,8 @@ plot(pairw.anova(y=diet_lab_data$resid_postmass_calculated, x=diet_lab_data$Trea
 #plot post condition
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
+levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
 ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                   ymax=resid_postmass_calculated + elSum$se,
@@ -157,7 +160,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
-  ylab("Post Body Mass (mg)") + xlab("Treatment")
+  ylab("Post Body Condition (mg)") + xlab("Treatment")
 
 #test for effect of starvation treatment
 df <- subset(diet_lab_data, select = c("BeetleID", "Sex", "Treatment", "Measured", "ln_premass_mg", "ln_postmass_mg"))
@@ -176,6 +179,8 @@ aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(Beetle
 #plot protein avg
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Treatment", "Sex"))
+levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
 ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                   ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
@@ -203,6 +208,8 @@ plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main=
 #plot phenoloxidase avg data
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="zPO_avg_abs_min", groupvars=c("Measured", "Treatment", "Sex"))
+levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
 ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                   ymax=zPO_avg_abs_min + elSum$se,
@@ -226,6 +233,8 @@ plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"), main="
 #plot melanization avg data
 #create SE measurements
 elSum <- summarySE(diet_lab_data, measurevar="z_AGV", groupvars=c("Measured", "Treatment", "Sex"))
+levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
 ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymax=z_AGV + elSum$se,
