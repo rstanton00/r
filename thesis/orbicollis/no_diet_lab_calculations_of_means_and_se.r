@@ -24,6 +24,9 @@ setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comment
 #mac
 #setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
+#####################
+#diet lab data setup
+#####################
 diet_lab_data <- read.csv('no_diet_lab.csv', head=TRUE, stringsAsFactors=FALSE)
 
 #tell R that certain data are categorical
@@ -45,8 +48,36 @@ diet_lab_data["ln_melanization"] <- c(log2(diet_lab_data$z_AGV))
 diet_lab_data["ln_po"] <- c(log2(diet_lab_data$zPO_avg_abs_min))
 diet_lab_data["sqrt_p"] <- c(log2(diet_lab_data$z_Protein_avg_adjusted_mg_ml))
 
+######################
+#diet field data setup
+######################
+diet_field_data <- read.csv('no_diet_field.csv', head=TRUE, stringsAsFactors=FALSE)
+
+#tell R that certain data are categorical
+diet_field_data$Sex <- factor(diet_field_data$Sex, levels = c("M", "F"), labels = c("Male", "Female"))
+diet_field_data$Population <- factor(diet_field_data$Population, levels = c("TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"))
+diet_field_data$Measured <- factor(diet_field_data$Measured, levels = c("PO_P", "Melaniz"))
+
+#remove known outliers
+#assign rows to data, using dataset data, where column BeetleId in data != "delete"
+diet_field_data <- diet_field_data[diet_field_data$BeetleID != 'delete',]
+diet_field_data <- diet_field_data[diet_field_data$BeetleID != 'bF004',]
+diet_field_data <- diet_field_data[diet_field_data$Population != 'TL_Davis_2010',]
+
+#add columns of transformed data
+diet_field_data["ln_mass_mg"] <- c(log2(diet_field_data$Mass_mg))
+diet_field_data["ln_elytra"] <- c(log2(diet_field_data$ElytraLength_mm))
+diet_field_data["ln_melanization"] <- c(log2(diet_field_data$z_AGV))
+diet_field_data["ln_po"] <- c(log2(diet_field_data$zPO_avg_abs_min))
+diet_field_data["sqrt_p"] <- c(log2(diet_field_data$z_Protein_avg_adjusted_mg_ml))
+
 #set options for all linear models/anovas
 options(contrasts=c("contr.sum","contr.poly"))
+
+
+######################################
+# lab analysis section
+######################################
 
 #test for equal start condions for beetle age, body mass, elytra length, and body condition */
 #All data together measured stands for "PO and Protein measurements" and "Filaments= Melanization" respectively */
@@ -244,3 +275,19 @@ ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
 
 #t.test(diet_lab_data$ln_postmass_mg, diet_lab_data$ln_premass_mg, paired=TRUE, data=diet_lab_data, na.action=na.omit)
 #summary(lme(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit))
+
+
+######################################
+# field analysis section
+######################################
+#body mass
+model <- lm(ln_mass_mg ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
+fieldbodymass.anova <- Anova(model, type=c(3))
+fieldbodymass.rg <- ref.grid(model)
+lsmeans(fieldbodymass.rg, "Measured")
+
+#elytra length
+model <- lm(ln_elytra ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
+fieldelytra.anova <- Anova(model, type=c(3))
+fieldelytra.rg <- ref.grid(model)
+lsmeans(fieldelytra.rg, "Measured")
