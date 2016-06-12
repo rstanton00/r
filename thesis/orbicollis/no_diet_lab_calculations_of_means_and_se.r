@@ -3,7 +3,7 @@ require(utils)
 update.packages(ask=FALSE)
 
 #verify that necessary packages are installed
-list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra")
+list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra", "cowplot")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -14,16 +14,17 @@ library(lsmeans)
 library(asbio)
 library(ggplot2)
 library(gridExtra)
+library(cowplot)
 require(stats)
 require(graphics)
 
 rm(list=ls())
 
 #linux
-#setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
+#setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 #####################
 #diet lab data setup
@@ -107,9 +108,9 @@ elSum <- summarySE(diet_lab_data, measurevar="ElytraLength_mm", groupvars=c("Mea
 ggplot(elSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                   ymax=ElytraLength_mm + elSum$se,
                   ymin=ElytraLength_mm - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 4) +
-  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  geom_point(position=position_dodge(width=0.3), size=3) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.3) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Elytra Length (mm)") + xlab("Treatment")
 
@@ -233,8 +234,8 @@ lsmeans(protein.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
-plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Protein",
-     xlab="Treatment", ylab="Protein mg/ml")
+#plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Protein",
+#     xlab="Treatment", ylab="Protein mg/ml")
 
 #plot phenoloxidase avg data
 #create SE measurements
@@ -258,8 +259,8 @@ lsmeans(po.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
-plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Phenoloxidase",
-     xlab="Treatment", ylab="Phenoloxidase")
+#plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Phenoloxidase",
+#     xlab="Treatment", ylab="Phenoloxidase")
 
 #plot melanization avg data
 #create SE measurements
@@ -300,3 +301,38 @@ model <- lm(ln_elytra ~ Sex + Population + Measured + Sex:Population + Sex:Measu
 fieldelytra.anova <- Anova(model, type=c(3))
 fieldelytra.rg <- ref.grid(model)
 lsmeans(fieldelytra.rg, "Measured")
+
+#condition
+model <- lm(resid_postmass_calculated ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
+fieldpostmass.anova <- Anova(model, type=c(3))
+fieldpostmass.rg <- ref.grid(model)
+lsmeans(fieldpostmass.rg, "Measured")
+
+#protein and PO analysis
+#set up new dataset that only examines phenoloxidase/protein data for analysis
+newData <- diet_field_data[ which(diet_field_data$Measured=='PO_P'), ]
+
+#protein
+#create SE measurements
+elSum <- summarySE(diet_field_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Population", "Sex"))
+levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
+ggplot(elSum, aes(x=factor(Population), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
+                  ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
+                  ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
+  geom_point(position=position_dodge(width=0.3), size = 3, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.3) +
+  #scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  ylab("Protein (mg/ml)") + xlab("Population")
+
+
+model <- lm(sqrt_p ~ Sex + Population + Sex:Population, data = newData, na.action=na.omit)
+protein <- Anova(model, type=c(3))
+protein.rg <- ref.grid(model)
+lsmeans(protein.rg, "Sex")
+lsmeans(protein.rg, "Population")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=newData$sqrt_p, x=newData$Population, method="scheffe")
+plot(pairw.anova(y=newData$sqrt_p, x=newData$Population, method="scheffe"), main="Field Beetle Protein",
+     xlab="Population", ylab="Protein mg/ml")
