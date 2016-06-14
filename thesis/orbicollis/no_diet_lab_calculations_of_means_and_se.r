@@ -26,6 +26,10 @@ setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comment
 #mac
 #setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
+diet_lab_data <- read.csv('no_diet_lab_and_field.csv', head=TRUE, stringsAsFactors=FALSE)
+
+#left off with re-write here
+
 #####################
 #diet lab data setup
 #####################
@@ -64,7 +68,7 @@ diet_field_data$Measured <- factor(diet_field_data$Measured, levels = c("PO_P", 
 #assign rows to data, using dataset data, where column BeetleId in data != "delete"
 diet_field_data <- diet_field_data[diet_field_data$BeetleID != 'delete',]
 diet_field_data <- diet_field_data[diet_field_data$BeetleID != 'bF004',]
-diet_field_data <- diet_field_data[diet_field_data$Population != 'TL_Davis_2010',]
+#diet_field_data <- diet_field_data[diet_field_data$Population != 'TL_Davis_2010',]
 
 #add columns of transformed data
 diet_field_data["ln_mass_mg"] <- c(log2(diet_field_data$Mass_mg))
@@ -152,7 +156,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
                   ymin=resid_premass_calculated - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 4) +
   geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Pre Body Mass (mg)") + xlab("Treatment")
 
@@ -190,7 +194,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                   ymin=resid_postmass_calculated - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 4) +
   geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured) +
   ylab("Post Body Condition (mg)") + xlab("Treatment")
 
@@ -213,13 +217,16 @@ aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(Beetle
 elSum <- summarySE(diet_lab_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Treatment", "Sex"))
 levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
+ProteinYmax <- elSum$z_Protein_avg_adjusted_mg_ml + elSum$se
+ProteinYmin <- elSum$z_Protein_avg_adjusted_mg_ml - elSum$se
+
 #create plot
 ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                   ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
                   ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   ylab("Protein (mg/ml)") + xlab("Treatment")
 
 #set up new dataset that only examines phenoloxidase/protein data for analysis
@@ -248,7 +255,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                   ymin=zPO_avg_abs_min - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Treatment")
 
 #phenoloxidase
@@ -273,7 +280,7 @@ ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymin=z_AGV - elSum$se)) +
   geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   scale_y_continuous(trans = "reverse") +
   ylab("Average Grey Value") + xlab("Treatment")
 
@@ -318,13 +325,12 @@ elSum <- summarySE(diet_field_data, measurevar="z_Protein_avg_adjusted_mg_ml", g
 levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
 ggplot(elSum, aes(x=factor(Population), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
-                  ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
-                  ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
+                  ymax=max(ProteinYmax),
+                  ymin=min(ProteinYmin))) +
   geom_point(position=position_dodge(width=0.3), size = 3, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.3) +
-  #scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad libitum", "3 days", "5 days")) +
+  #scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   ylab("Protein (mg/ml)") + xlab("Population")
-
 
 model <- lm(sqrt_p ~ Sex + Population + Sex:Population, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
