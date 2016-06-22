@@ -138,7 +138,50 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Pre-Experiment Body Condition (mg)") + xlab("Treatment") +
+  ylab("Pre-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#post mass
+model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = lab_data, na.action=na.omit)
+postmass.anova <- Anova(model, type=c(3))
+postmass.rg <- ref.grid(model)
+lsmeans(postmass.rg, "Sex")
+lsmeans(postmass.rg, "Measured")
+lsmeans(postmass.rg, "Treatment")
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=lab_data$ln_postmass, x=lab_data$Treatment, method="scheffe")
+#plot(pairw.anova(y=lab_data$ln_postmass, x=lab_data$Treatment, method="scheffe"))
+
+#post condition calculated
+model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = lab_data, na.action=na.omit)
+residpostmass.anova <- Anova(model, type=c(3))
+residpostmass.rg <- ref.grid(model)
+lsmeans(residpostmass.rg, "Sex")
+lsmeans(residpostmass.rg, "Measured")
+lsmeans(residpostmass.rg, "Treatment")
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe")
+#plot(pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe"))
+
+#plot post condition point plots with SE bars
+#create SE measurements
+dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
+
+ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
+                    ymax=resid_postmass_calculated + dataSum$se,
+                    ymin=resid_postmass_calculated - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
   theme_bw() +
   theme(text = element_text(size=11),
         strip.text.x=element_text(size=11),
