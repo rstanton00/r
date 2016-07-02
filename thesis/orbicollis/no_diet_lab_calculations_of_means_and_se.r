@@ -205,47 +205,31 @@ dfL$time <- factor(dfL$time, levels = 1:2, labels = c("pre", "post"))
 head(dfL); tail(dfL)
 aovMod <- aov(resid_mass_calc ~ Sex * Treatment * Measured * time + Error(BeetleID/time), data = dfL)
 
-#######
-#left off here
-#######
-
 #plot protein avg
 #create SE measurements
 dataSum <- summarySE(diet_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Treatment", "Sex"))
-levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
-levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
-ProteinYmax <- elSum$z_Protein_avg_adjusted_mg_ml + elSum$se
-ProteinYmin <- elSum$z_Protein_avg_adjusted_mg_ml - elSum$se
+levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
-#create plot
-ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
-                  ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
-                  ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
-  ylab("Protein (mg/ml)") + xlab("Treatment")
-
-
-#plot protein avg
-#create SE measurements
-elSum <- summarySE(diet_lab_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Treatment", "Sex"))
-levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
-levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
-ProteinYmax <- elSum$z_Protein_avg_adjusted_mg_ml + elSum$se
-ProteinYmin <- elSum$z_Protein_avg_adjusted_mg_ml - elSum$se
-
-#create plot
-ggplot(elSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
-                  ymax=z_Protein_avg_adjusted_mg_ml + elSum$se,
-                  ymin=z_Protein_avg_adjusted_mg_ml - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5), width=0.5) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
-  ylab("Protein (mg/ml)") + xlab("Treatment")
+#create protein plot
+ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
+                    ymax=z_Protein_avg_adjusted_mg_ml + dataSum$se,
+                    ymin=z_Protein_avg_adjusted_mg_ml - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
+  ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Treatment or Field Setting") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
 
 #set up new dataset that only examines phenoloxidase/protein data for analysis
-newData <- diet_lab_data[ which(diet_lab_data$Measured=='PO_P'), ]
+newData <- diet_data[ which(diet_data$Measured=='PO_P'), ]
 
 #protein
 model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
@@ -261,19 +245,28 @@ pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
 
 #plot phenoloxidase avg data
 #create SE measurements
-elSum <- summarySE(diet_lab_data, measurevar="zPO_avg_abs_min", groupvars=c("Measured", "Treatment", "Sex"))
-levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
-levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
-#create plot
-ggplot(elSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
-                  ymax=zPO_avg_abs_min + elSum$se,
-                  ymin=zPO_avg_abs_min - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
-  ylab("Phenoloxidase (abs/min)") + xlab("Treatment")
+dataSum <- summarySE(diet_data, measurevar="zPO_avg_abs_min", groupvars=c("Measured", "Treatment", "Sex"))
+levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
-#phenoloxidase
+#create phenoloxidase plot
+ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
+                    ymax=zPO_avg_abs_min + dataSum$se,
+                    ymin=zPO_avg_abs_min - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5, na.rm = TRUE) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
+  ylab("Phenoloxidase (abs/min)") + xlab("Treatment or Field Setting") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#phenoloxidase analysis
 model <- lm(ln_po ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
 po.rg <- ref.grid(model)
@@ -286,18 +279,26 @@ pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
 
 #plot melanization avg data
 #create SE measurements
-elSum <- summarySE(diet_lab_data, measurevar="z_AGV", groupvars=c("Measured", "Treatment", "Sex"))
-levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
-levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
+dataSum <- summarySE(diet_data, measurevar="z_AGV", groupvars=c("Measured", "Treatment", "Sex"))
+levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
+levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
-ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
-                  ymax=z_AGV + elSum$se,
-                  ymin=z_AGV - elSum$se)) +
-  geom_point(position=position_dodge(width=0.5), size = 4, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.5), width=0.3) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
+                  ymax=z_AGV + dataSum$se,
+                  ymin=z_AGV - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size = 2.5, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
   scale_y_continuous(trans = "reverse") +
-  ylab("Average Grey Value") + xlab("Treatment")
+  ylab("Average Grey Value") + xlab("Treatment or Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
 
 #model <- lm(cbind(ln_premass_mg, ln_postmass_mg) ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_lab_data, na.action=na.omit)
 #effect_of_treatment <- Anova(model, type=c(3))
@@ -313,47 +314,34 @@ ggplot(elSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
 # field analysis section
 ######################################
 #body mass
-model <- lm(ln_mass_mg ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
-fieldbodymass.anova <- Anova(model, type=c(3))
+model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
+# problematic, says there are aliased coefficients in the model: fieldbodymass.anova <- Anova(model, type=c(3))
 fieldbodymass.rg <- ref.grid(model)
 lsmeans(fieldbodymass.rg, "Measured")
 
 #elytra length
-model <- lm(ln_elytra ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
+model <- lm(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
 fieldelytra.anova <- Anova(model, type=c(3))
 fieldelytra.rg <- ref.grid(model)
 lsmeans(fieldelytra.rg, "Measured")
 
 #condition
-model <- lm(resid_postmass_calculated ~ Sex + Population + Measured + Sex:Population + Sex:Measured + Measured:Population + Sex:Population:Measured, data = diet_field_data, na.action=na.omit)
+model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
 fieldpostmass.anova <- Anova(model, type=c(3))
 fieldpostmass.rg <- ref.grid(model)
 lsmeans(fieldpostmass.rg, "Measured")
 
 #protein and PO analysis
 #set up new dataset that only examines phenoloxidase/protein data for analysis
-newData <- diet_field_data[ which(diet_field_data$Measured=='PO_P'), ]
+newData <- field_data[ which(field_data$Measured=='PO_P'), ]
 
-#protein
-#create SE measurements
-elSum <- summarySE(diet_field_data, measurevar="z_Protein_avg_adjusted_mg_ml", groupvars=c("Measured", "Population", "Sex"))
-levels(elSum$Measured)[levels(elSum$Measured)=="PO_P"] <- "Phenoloxidase"
-levels(elSum$Measured)[levels(elSum$Measured)=="Melaniz"] <- "Melanization"
-ggplot(elSum, aes(x=factor(Population), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
-                  ymax=max(ProteinYmax),
-                  ymin=min(ProteinYmin))) +
-  geom_point(position=position_dodge(width=0.3), size = 3, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.3), width=0.3) +
-  #scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
-  ylab("Protein (mg/ml)") + xlab("Population")
-
-model <- lm(sqrt_p ~ Sex + Population + Sex:Population, data = newData, na.action=na.omit)
+model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
 protein.rg <- ref.grid(model)
 lsmeans(protein.rg, "Sex")
-lsmeans(protein.rg, "Population")
+lsmeans(protein.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
-pairw.anova(y=newData$sqrt_p, x=newData$Population, method="scheffe")
-plot(pairw.anova(y=newData$sqrt_p, x=newData$Population, method="scheffe"), main="Field Beetle Protein",
-     xlab="Population", ylab="Protein mg/ml")
+pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
+#plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Field Beetle Protein",
+#     xlab="Population", ylab="Protein mg/ml")
