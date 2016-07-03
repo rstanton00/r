@@ -314,8 +314,11 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
 # field analysis section
 ######################################
 #body mass
-model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
-# problematic, says there are aliased coefficients in the model: fieldbodymass.anova <- Anova(model, type=c(3))
+#need to create new dataset not including tl davis 2010 in order to get the model working
+field_data_no_tl2010 <- field_data[field_data$Treatment != 'TL_Davis_2010',]
+field_data_no_tl2010$Treatment <- factor(field_data_no_tl2010$Treatment, levels = c("TL_Davis_2011", "Washingon_Co_2011"))
+model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
+fieldbodymass.anova <- Anova(model, type=c(3))
 fieldbodymass.rg <- ref.grid(model)
 lsmeans(fieldbodymass.rg, "Measured")
 
