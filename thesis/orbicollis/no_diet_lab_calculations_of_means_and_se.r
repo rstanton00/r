@@ -38,7 +38,8 @@ diet_data$Measured <- factor(diet_data$Measured, levels = c("PO_P", "Melaniz"))
 #assign rows to data, using dataset data, where column BeetleId in data != "delete"
 diet_data <- diet_data[diet_data$BeetleID != 'delete',]
 diet_data <- diet_data[diet_data$BeetleID != 'bF004',]
-#diet_data <- diet_data[diet_data$Population != 'TL_Davis_2010',]
+#remove TL Davis population from 2010, as elytra were not measured
+diet_data <- diet_data[diet_data$Treatment != 'TL_Davis_2010',]
 # does this work? diet_data <- filter(diet_data, !grepl('delete', BeetleID))
 
 #add columns of transformed data
