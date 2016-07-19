@@ -171,7 +171,7 @@ lsmeans(residpostmass.rg, "Treatment")
 pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe")
 #plot(pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe"))
 
-#plot post condition point plots with SE bars
+#plot LAB ONLY post condition point plots with SE bars
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
@@ -182,6 +182,26 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#plot ALL DATA post condition point plots with SE bars
+#create SE measurements
+dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvars=c("Treatment", "Sex"))
+
+ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
+                    ymax=resid_postmass_calculated + dataSum$se,
+                    ymin=resid_postmass_calculated - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
   ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
   theme_bw() +
   theme(text = element_text(size=11),
