@@ -3,7 +3,7 @@ require(utils)
 update.packages(ask=FALSE)
 
 #verify that necessary packages are installed
-list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra", "cowplot")
+#list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra", "cowplot")
 list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -22,17 +22,12 @@ require(graphics)
 rm(list=ls())
 
 #linux
-setwd('/home/rstanton/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+setwd('/home/rls/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
 #setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_data <- read.csv('no_diet_lab_and_field.csv', head=TRUE, stringsAsFactors=FALSE)
-
-#tell R that certain data are categorical
-diet_data$Sex <- factor(diet_data$Sex, levels = c("M", "F"), labels = c("Male", "Female"))
-diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"))
-diet_data$Measured <- factor(diet_data$Measured, levels = c("PO_P", "Melaniz"))
 
 #remove known outliers
 #assign rows to data, using dataset data, where column BeetleId in data != "delete"
@@ -41,6 +36,12 @@ diet_data <- diet_data[diet_data$BeetleID != 'bF004',]
 #remove TL Davis population from 2010, as elytra were not measured
 diet_data <- diet_data[diet_data$Treatment != 'TL_Davis_2010',]
 # does this work? diet_data <- filter(diet_data, !grepl('delete', BeetleID))
+
+#tell R that certain data are categorical
+diet_data$Sex <- factor(diet_data$Sex, levels = c("M", "F"), labels = c("Male", "Female"))
+diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011"))
+#diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"))
+diet_data$Measured <- factor(diet_data$Measured, levels = c("PO_P", "Melaniz"))
 
 #add columns of transformed data
 diet_data["ln_premass_mg"] <- c(log2(diet_data$PreMass_mg))
@@ -51,9 +52,7 @@ diet_data["ln_po"] <- c(log2(diet_data$zPO_avg_abs_min))
 diet_data["sqrt_p"] <- c(log2(diet_data$z_Protein_avg_adjusted_mg_ml))
 
 #create subsets of data for when we do analysis only on lab or field data
-lab_data <- subset(diet_data, diet_data$Treatment != 'TL_Davis_2010' & 
-                     diet_data$Treatment != 'TL_Davis_2011' &
-                     diet_data$Treatment != 'Washingon_Co_2011')
+lab_data <- subset(diet_data, diet_data$Treatment != 'TL_Davis_2011' & diet_data$Treatment != 'Washingon_Co_2011')
 #re-declare treatment levels for lab data as we only had a,b,c treatments in lab
 lab_data$Treatment <- factor(lab_data$Treatment, levels = c("a", "b", "c"))
 
@@ -95,6 +94,9 @@ to_string_trt <- as_labeller(c('PO_P'="Phenoloxidase", 'Melaniz'="Melanization")
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
 
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                   ymax=ElytraLength_mm + dataSum$se,
                   ymin=ElytraLength_mm - dataSum$se)) +
@@ -132,6 +134,9 @@ pairw.anova(y=lab_data$resid_premass_calculated, x=lab_data$Treatment, method="s
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="resid_premass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
                     ymax=resid_premass_calculated + dataSum$se,
                     ymin=resid_premass_calculated - dataSum$se)) +
@@ -175,6 +180,9 @@ pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
@@ -196,13 +204,16 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
 #create SE measurements
 dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvars=c("Treatment", "Sex"))
 
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size=2.5) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
-  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=11),
         strip.text.x=element_text(size=11),
@@ -233,12 +244,15 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
 #create protein plot
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                     ymax=z_Protein_avg_adjusted_mg_ml + dataSum$se,
                     ymin=z_Protein_avg_adjusted_mg_ml - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size=2.5) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Treatment or Field Setting") +
   theme_bw() +
   theme(text = element_text(size=11),
@@ -271,12 +285,15 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
 #create phenoloxidase plot
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                     ymax=zPO_avg_abs_min + dataSum$se,
                     ymin=zPO_avg_abs_min - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size=2.5, na.rm = TRUE) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Treatment or Field Setting") +
   theme_bw() +
   theme(text = element_text(size=11),
@@ -304,12 +321,15 @@ dataSum <- summarySE(diet_data, measurevar="z_AGV", groupvars=c("Measured", "Tre
 levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
+#field setting 1 = WaCo 2011
+#field setting 2 = TLDavis 2011
+#field setting 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymax=z_AGV + dataSum$se,
                   ymin=z_AGV - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size = 2.5, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"), labels=c("Ad lib.", "3 days", "5 days", "TLD 2010", "WaCo 2011", "TLD 2011")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   scale_y_continuous(trans = "reverse") +
   ylab("Average Grey Value") + xlab("Treatment or Field Site") +
   theme_bw() +
@@ -334,30 +354,31 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
 ######################################
 # field analysis section
 ######################################
-#body mass
-#need to create new dataset not including tl davis 2010 in order to get the model working
+#need to create new dataset not including tl davis 2010 in order to get some models working
 field_data_no_tl2010 <- field_data[field_data$Treatment != 'TL_Davis_2010',]
 field_data_no_tl2010$Treatment <- factor(field_data_no_tl2010$Treatment, levels = c("TL_Davis_2011", "Washingon_Co_2011"))
+
+#body mass
 model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
 fieldbodymass.anova <- Anova(model, type=c(3))
 fieldbodymass.rg <- ref.grid(model)
 lsmeans(fieldbodymass.rg, "Measured")
 
 #elytra length
-model <- lm(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
+model <- lm(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
 fieldelytra.anova <- Anova(model, type=c(3))
 fieldelytra.rg <- ref.grid(model)
 lsmeans(fieldelytra.rg, "Measured")
 
 #condition
-model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data, na.action=na.omit)
+model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
 fieldpostmass.anova <- Anova(model, type=c(3))
 fieldpostmass.rg <- ref.grid(model)
 lsmeans(fieldpostmass.rg, "Measured")
 
 #protein and PO analysis
 #set up new dataset that only examines phenoloxidase/protein data for analysis
-newData <- field_data[ which(field_data$Measured=='PO_P'), ]
+newData <- field_data_no_tl2010[ which(field_data_no_tl2010$Measured=='PO_P'), ]
 
 model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
@@ -369,3 +390,31 @@ lsmeans(protein.rg, "Treatment")
 pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
 #plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Field Beetle Protein",
 #     xlab="Population", ylab="Protein mg/ml")
+
+po <- Anova(model, type=c(3))
+po.rg <- ref.grid(model)
+lsmeans(po.rg, "Sex")
+lsmeans(po.rg, "Treatment")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
+
+####
+# Pairwise analysis between field & lab data for PROTEIN
+####
+newData <- diet_data[ which(diet_data$Measured=='PO_P'), ]
+pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
+
+#In R, how do I merge data from multiple groups into a new super group?
+#I want all field data to be in a field_data group and all lab data and then compare the two against each other
+
+####
+# Pairwise analysis between field & lab data for PO
+####
+pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
+
+#
+# Pairwise for melanization
+#
+newData <- diet_data[ which(diet_data$Measured=='Melaniz'), ]
+pairw.anova(y=newData$ln_melanization, x=newData$Treatment, method="scheffe")
