@@ -90,6 +90,9 @@ lsmeans(elytra.rg, "Measured")
 #create a labeller function for renaming the treatment facets for facet wrapping
 to_string_trt <- as_labeller(c('PO_P'="Phenoloxidase", 'Melaniz'="Melanization"))
 
+#get summary of means and std. errors for analysis table
+dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment"))
+
 #plot elytra length point plots with SE bars
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
