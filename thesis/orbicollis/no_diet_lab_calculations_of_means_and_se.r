@@ -91,7 +91,7 @@ lsmeans(elytra.rg, "Measured")
 to_string_trt <- as_labeller(c('PO_P'="Phenoloxidase", 'Melaniz'="Melanization"))
 
 #get summary of means and std. errors for analysis table
-dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment"))
+dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Treatment"))
 
 #plot elytra length point plots with SE bars
 #create SE measurements
@@ -178,6 +178,9 @@ lsmeans(residpostmass.rg, "Treatment")
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe")
 #plot(pairw.anova(y=lab_data$resid_postmass_calculated, x=lab_data$Treatment, method="scheffe"))
+
+#show analysis for results table
+dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars=c("Treatment"))
 
 #plot LAB ONLY post condition point plots with SE bars
 #create SE measurements
