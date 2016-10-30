@@ -117,6 +117,21 @@ ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
         strip.background = element_blank(),
         legend.key = element_blank())
 
+#BOXPLOT
+ggplot(lab_data, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Elytra Length (mm)") + xlab("Treatment") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
 #alternately, six different plots, though "limits" doesn't work as of 2016/06/15
 #ggplot(elSum, aes(x=factor(Measured), y=ElytraLength_mm), group=Sex) +
 #geom_point() + geom_errorbar(limits, width=0.1) + facet_wrap(~ Treatment + Sex)
