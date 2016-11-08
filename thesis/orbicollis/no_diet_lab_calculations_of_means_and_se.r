@@ -22,10 +22,10 @@ require(graphics)
 rm(list=ls())
 
 #linux
-setwd('/home/rls/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
+#setwd('/home/rls/Documents/biology/writings/thesis/thesis_stats_and_comments/csv_data')
 
 #mac
-#setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
+setwd('/Users/rstanton/Documents/pers/thesis/N orbicollis data/Data Analysis/csv')
 
 diet_data <- read.csv('no_diet_lab_and_field.csv', head=TRUE, stringsAsFactors=FALSE)
 
@@ -172,6 +172,21 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
         strip.background = element_blank(),
         legend.key = element_blank())
 
+#BOXPLOT
+ggplot(lab_data, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Pre-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
 #post mass
 model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = lab_data, na.action=na.omit)
 postmass.anova <- Anova(model, type=c(3))
@@ -221,6 +236,21 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
         strip.background = element_blank(),
         legend.key = element_blank())
 
+#BOXPLOT
+ggplot(lab_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
 #plot ALL DATA post condition point plots with SE bars
 #create SE measurements
 dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvars=c("Treatment", "Sex"))
@@ -235,6 +265,21 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
   scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment or Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#BOXPLOT
+ggplot(diet_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
   theme_bw() +
   theme(text = element_text(size=11),
         strip.text.x=element_text(size=11),
@@ -284,6 +329,20 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex
         strip.background = element_blank(),
         legend.key = element_blank())
 
+#BOXPLOT
+ggplot(diet_data, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Treatment or Field Setting") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
 #set up new dataset that only examines phenoloxidase/protein data for analysis
 newData <- diet_data[ which(diet_data$Measured=='PO_P'), ]
 
@@ -314,6 +373,20 @@ ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                     ymin=zPO_avg_abs_min - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size=2.5, na.rm = TRUE) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  ylab("Phenoloxidase (abs/min)") + xlab("Treatment or Field Setting") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#BOXPLOT
+ggplot(diet_data, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
   scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Treatment or Field Setting") +
   theme_bw() +
