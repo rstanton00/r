@@ -4,7 +4,7 @@ update.packages(ask=FALSE)
 
 #verify that necessary packages are installed
 #list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra", "cowplot")
-list.of.packages <- c("ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra")
+list.of.packages <- c("agricolae", "ggplot2", "Rcpp", "Rmisc", "car", "asbio", "lsmeans", "dplyr", "gridExtra")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -15,6 +15,7 @@ library(lsmeans)
 library(asbio)
 library(ggplot2)
 library(gridExtra)
+library(agricolae)
 #library(cowplot)
 require(stats)
 require(graphics)
@@ -96,6 +97,11 @@ dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Treatm
 #plot elytra length point plots with SE bars
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
+
+aovElytra <- aov(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data=lab_data, na.action=na.omit)
+summary(aovElytra)
+HSD.test(aovElytra, "ln_elytra")
+#TukeyHSD(aovElytra, "Treatment")
 
 #field setting 1 = WaCo 2011
 #field setting 2 = TLDavis 2011
@@ -425,6 +431,20 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
   scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   scale_y_continuous(trans = "reverse") +
+  ylab("Average Grey Value") + xlab("Treatment or Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=11),
+        strip.text.x=element_text(size=11),
+        strip.text.y=element_text(size=11),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#BOXPLOT
+ggplot(diet_data, aes(x=factor(Treatment), y=z_AGV, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
   ylab("Average Grey Value") + xlab("Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=11),
