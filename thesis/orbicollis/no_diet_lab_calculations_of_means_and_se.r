@@ -232,7 +232,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
   scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Post-Experiment Body Condition (residuals)") + xlab("Treatment") +
+  ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
   theme(text = element_text(size=11),
         strip.text.x=element_text(size=11),
@@ -531,4 +531,7 @@ pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
 # Pairwise for melanization
 #
 newData <- diet_data[ which(diet_data$Measured=='Melaniz'), ]
+pairw.anova(y=newData$ln_melanization, x=newData$Treatment, method="scheffe")
+
+newData <- newData[ which(newData$Sex=='Female'), ]
 pairw.anova(y=newData$ln_melanization, x=newData$Treatment, method="scheffe")
