@@ -103,9 +103,9 @@ summary(aovElytra)
 HSD.test(aovElytra, "ln_elytra")
 #TukeyHSD(aovElytra, "Treatment")
 
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                   ymax=ElytraLength_mm + dataSum$se,
                   ymin=ElytraLength_mm - dataSum$se)) +
@@ -158,9 +158,9 @@ pairw.anova(y=lab_data$resid_premass_calculated, x=lab_data$Treatment, method="s
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="resid_premass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
                     ymax=resid_premass_calculated + dataSum$se,
                     ymin=resid_premass_calculated - dataSum$se)) +
@@ -222,9 +222,9 @@ dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars
 #create SE measurements
 dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 to_string_trt <- as_labeller(c('PO_P'="A", 'Melaniz'="B"))
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
@@ -262,9 +262,9 @@ ggplot(lab_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, 
 #create SE measurements
 dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvars=c("Treatment", "Sex"))
 
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
@@ -317,9 +317,9 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
 #create protein plot
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                     ymax=z_Protein_avg_adjusted_mg_ml + dataSum$se,
                     ymin=z_Protein_avg_adjusted_mg_ml - dataSum$se)) +
@@ -372,9 +372,9 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 
 #create phenoloxidase plot
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                     ymax=zPO_avg_abs_min + dataSum$se,
                     ymin=zPO_avg_abs_min - dataSum$se)) +
@@ -422,9 +422,9 @@ dataSum <- summarySE(diet_data, measurevar="z_AGV", groupvars=c("Measured", "Tre
 levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
-#field setting 1 = WaCo 2011
-#field setting 2 = TLDavis 2011
-#field setting 3 = TLDavis 2010
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
 ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymax=z_AGV + dataSum$se,
                   ymin=z_AGV - dataSum$se)) +
