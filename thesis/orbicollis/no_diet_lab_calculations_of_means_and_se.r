@@ -351,11 +351,11 @@ ggplot(diet_data, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=S
         legend.key = element_blank())
 
 #set up new dataset that only examines phenoloxidase/protein data for analysis
-newData <- diet_data[ which(diet_data$Measured=='PO_P'), ]
+newData <- lab_data[ which(lab_data$Measured=='PO_P'), ]
 
 #protein
 model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
-protein <- Anova(model, type=c(3))
+labProteinAnova <- Anova(model, type=c(3))
 protein.rg <- ref.grid(model)
 lsmeans(protein.rg, "Sex")
 lsmeans(protein.rg, "Treatment")
@@ -416,9 +416,27 @@ pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
 #plot(pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe"), main="Treatment Effect on Phenoloxidase",
 #     xlab="Treatment", ylab="Phenoloxidase")
 
+##############
+# Melanization
+##############
+
+#set up dataset that uses only melanization data
+newData <- lab_data[ which(lab_data$Measured=='Melaniz'), ]
+
+model <- lm(z_AGV ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
+labMelanAnova <- Anova(model, type=c(3))
+labMelan.rg <- ref.grid(model)
+lsmeans(labMelan.rg, "Sex")
+lsmeans(labMelan.rg, "Treatment")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=newData$z_AGV, x=newData$Treatment, method="scheffe")
+
 #plot melanization avg data
 #create SE measurements
 dataSum <- summarySE(diet_data, measurevar="z_AGV", groupvars=c("Measured", "Treatment", "Sex"))
+
+
 levels(dataSum$Measured)[levels(dataSum$Measured)=="PO_P"] <- "Phenoloxidase"
 levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 #create plot
@@ -485,16 +503,110 @@ fieldelytra.anova <- Anova(model, type=c(3))
 fieldelytra.rg <- ref.grid(model)
 lsmeans(fieldelytra.rg, "Measured")
 
+#create a labeller function for renaming the treatment facets for facet wrapping
+#to_string_trt <- as_labeller(c('PO_P'="Phenoloxidase", 'Melaniz'="Melanization"))
+
+#get summary of means and std. errors for analysis table
+dataSum <- summarySE(field_data_no_tl2010, measurevar="ElytraLength_mm", groupvars=c("Treatment"))
+
+#plot elytra length point plots with SE bars
+#create SE measurements
+dataSum <- summarySE(field_data_no_tl2010, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
+
+aovFieldElytra <- aov(ln_elytra ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data=field_data_no_tl2010, na.action=na.omit)
+summary(aovFieldElytra)
+HSD.test(aovFieldElytra, "ln_elytra")
+#TukeyHSD(aovElytra, "Treatment")
+
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
+ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
+                    ymax=ElytraLength_mm + dataSum$se,
+                    ymin=ElytraLength_mm - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Elytra Length (mm)") + xlab("Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        strip.text.x=element_text(size=10),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#BOXPLOT
+ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Elytra Length (mm)") + xlab("Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        strip.text.x=element_text(size=10),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+
 #condition
 model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
 fieldpostmass.anova <- Anova(model, type=c(3))
 fieldpostmass.rg <- ref.grid(model)
 lsmeans(fieldpostmass.rg, "Measured")
 
-#protein and PO analysis
-#set up new dataset that only examines phenoloxidase/protein data for analysis
-newData <- field_data_no_tl2010[ which(field_data_no_tl2010$Measured=='PO_P'), ]
+#get summary of means and std. errors for analysis table
+dataSum <- summarySE(field_data_no_tl2010, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
 
+aovFieldCondition <- aov(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data=field_data_no_tl2010, na.action=na.omit)
+summary(aovFieldCondition)
+HSD.test(aovFieldCondition, "resid_postmass_calculated")
+pairw.anova(y=field_data_no_tl2010$resid_postmass_calculated, x=field_data_no_tl2010$Treatment, method="scheffe")
+
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
+ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
+                    ymax=resid_postmass_calculated + dataSum$se,
+                    ymin=resid_postmass_calculated - dataSum$se)) +
+  geom_point(position=position_dodge(width=0.25), size=2.5) +
+  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Field Beetle Body Condition (residuals)") + xlab("Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        strip.text.x=element_text(size=10),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+#BOXPLOT
+ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
+  geom_boxplot() +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  ylab("Field Beetle Body Condition (residuals)") + xlab("Field Site") +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        strip.text.x=element_text(size=10),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        legend.key = element_blank())
+
+############
+#Protein (no significant factors, so no plots)
+############
+newData <- field_data_no_tl2010[ which(field_data_no_tl2010$Measured=='PO_P'), ]
 model <- lm(sqrt_p ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 protein <- Anova(model, type=c(3))
 protein.rg <- ref.grid(model)
@@ -503,9 +615,13 @@ lsmeans(protein.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe")
-#plot(pairw.anova(y=newData$sqrt_p, x=newData$Treatment, method="scheffe"), main="Field Beetle Protein",
-#     xlab="Population", ylab="Protein mg/ml")
+pairw.anova(y=newData$sqrt_p, x=newData$Sex, method="scheffe")
 
+
+############
+#PO (no significant factors, so no plots)
+############
+model <- lm(ln_po ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
 po <- Anova(model, type=c(3))
 po.rg <- ref.grid(model)
 lsmeans(po.rg, "Sex")
@@ -513,6 +629,24 @@ lsmeans(po.rg, "Treatment")
 #produces similar results, slight rounding differences between SAS and R output
 #conduct pairwise comparisons between treatments using the scheffe test
 pairw.anova(y=newData$ln_po, x=newData$Treatment, method="scheffe")
+pairw.anova(y=newData$ln_po, x=newData$Sex, method="scheffe")
+
+
+############
+#melanizaiton (no significant factors, so no plots)
+############
+newData <- field_data_no_tl2010[ which(field_data_no_tl2010$Measured=='Melaniz'), ]
+model <- lm(z_AGV ~ Sex + Treatment + Sex:Treatment, data = newData, na.action=na.omit)
+melan <- Anova(model, type=c(3))
+melan.rg <- ref.grid(model)
+lsmeans(melan.rg, "Sex")
+lsmeans(melan.rg, "Treatment")
+#produces similar results, slight rounding differences between SAS and R output
+#conduct pairwise comparisons between treatments using the scheffe test
+pairw.anova(y=newData$z_AGV, x=newData$Treatment, method="scheffe")
+pairw.anova(y=newData$z_AGV, x=newData$Sex, method="scheffe")
+
+
 
 ####
 # Pairwise analysis between field & lab data for PROTEIN
