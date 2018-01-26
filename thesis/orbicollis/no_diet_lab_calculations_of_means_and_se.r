@@ -89,7 +89,7 @@ elytra.rg <- ref.grid(model)
 lsmeans(elytra.rg, "Measured")
 
 #create a labeller function for renaming the treatment facets for facet wrapping
-to_string_trt <- as_labeller(c('PO_P'="Phenoloxidase", 'Melaniz'="Melanization"))
+to_string_trt <- as_labeller(c('PO_P'="A", 'Melaniz'="B"))
 
 #get summary of means and std. errors for analysis table
 dataSum <- summarySE(lab_data, measurevar="ElytraLength_mm", groupvars=c("Treatment"))
@@ -109,24 +109,32 @@ HSD.test(aovElytra, "ln_elytra")
 ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                   ymax=ElytraLength_mm + dataSum$se,
                   ymin=ElytraLength_mm - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  xlab("Lab Starvation Treatment") +
+  ylab("Elytra Length (mm)") +
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AL", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Elytra Length (mm)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
-        strip.text.y=element_text(size=10),
+        #strip.text.x = element_text(size=10),
+        strip.text.x = element_blank(),
+        strip.text.y = element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank(),
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
+
+#effken uno thesis:
+#width = 4.23"
+#height = 3.44"
 
 #BOXPLOT
 ggplot(lab_data, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Elytra Length (mm)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
@@ -164,24 +172,28 @@ dataSum <- summarySE(lab_data, measurevar="resid_premass_calculated", groupvars=
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex,
                     ymax=resid_premass_calculated + dataSum$se,
                     ymin=resid_premass_calculated - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  xlab("Lab Starvation Treatment") +
+  ylab("Pre-Experiment Body Condition (residuals)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AL", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Pre-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
-
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
+        
 #BOXPLOT
-ggplot(lab_data, aes(x=factor(Treatment), y=resid_premass_calculated, pch=Sex, fill=Sex)) +
+ggplot(lab_data, aes(x=factor(Treatment), y=diet_data$resid_premass_calculated, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Pre-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
@@ -225,28 +237,31 @@ dataSum <- summarySE(lab_data, measurevar="resid_postmass_calculated", groupvars
 #field site 1 = WaCo 2011
 #field site 2 = TLDavis 2011
 #field site 3 = TLDavis 2010
-to_string_trt <- as_labeller(c('PO_P'="A", 'Melaniz'="B"))
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  xlab("Lab Starvation Treatment") +
+  ylab("Post-Experiment Body Condition (residuals)") +
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AL", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 #BOXPLOT
 ggplot(lab_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Ad lib.", "3 days", "5 days")) +
+  scale_x_discrete(breaks = c("a", "b", "c"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
@@ -268,23 +283,27 @@ dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvar
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
-  ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment or Field Site") +
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Post-Experiment Body Condition (residuals)") + 
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
@@ -323,23 +342,27 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
                     ymax=z_Protein_avg_adjusted_mg_ml + dataSum$se,
                     ymin=z_Protein_avg_adjusted_mg_ml - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
-  ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Lab Starvation Treatment or Field Site") +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Protein Concentration in Hemolymph (mg/ml)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -378,23 +401,27 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
                     ymax=zPO_avg_abs_min + dataSum$se,
                     ymin=zPO_avg_abs_min - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5, na.rm = TRUE) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
-  ylab("Phenoloxidase (abs/min)") + xlab("Lab Starvation Treatment or Field Site") +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Phenoloxidase (abs/min)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1, na.rm = TRUE) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x=element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -446,24 +473,49 @@ levels(dataSum$Measured)[levels(dataSum$Measured)=="Melaniz"] <- "Melanization"
 ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
                   ymax=z_AGV + dataSum$se,
                   ymin=z_AGV - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size = 2.5, na.rm=TRUE) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Average Grey Value") + 
+  geom_point(position=position_dodge(width=0.3), size = 2.1, na.rm=TRUE) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   scale_y_continuous(trans = "reverse") +
-  ylab("Average Grey Value") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x=element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
+
+ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex,
+                    ymax=z_Protein_avg_adjusted_mg_ml + dataSum$se,
+                    ymin=z_Protein_avg_adjusted_mg_ml - dataSum$se)) +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Protein Concentration in Hemolymph (mg/ml)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
+
 
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=z_AGV, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Ad lib.", "3 days", "5 days", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Average Grey Value") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -574,19 +626,23 @@ pairw.anova(y=field_data_no_tl2010$resid_postmass_calculated, x=field_data_no_tl
 ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymax=resid_postmass_calculated + dataSum$se,
                     ymin=resid_postmass_calculated - dataSum$se)) +
-  geom_point(position=position_dodge(width=0.25), size=2.5) +
-  geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
+  xlab("Field Site") +
+  ylab("Field Beetle Body Condition (residuals)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
   scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
-  ylab("Field Beetle Body Condition (residuals)") + xlab("Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
-        strip.text.x=element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x=element_blank(),
         strip.text.y=element_text(size=10),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
-        legend.key = element_blank())
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 #BOXPLOT
 ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
@@ -602,6 +658,73 @@ ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=resid_postmass_calculate
         panel.grid.minor = element_blank(),
         strip.background = element_blank(),
         legend.key = element_blank())
+
+###########
+#Combined field and lab data for post-condition
+###########
+model <- lm(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = diet_data, na.action=na.omit)
+combinedpostmass.anova <- Anova(model, type=c(3))
+combinedpostmass.rg <- ref.grid(model)
+lsmeans(combinedpostmass.rg, "Measured")
+
+#get summary of means and std. errors for analysis table
+dataSum <- summarySE(diet_data, measurevar="resid_postmass_calculated", groupvars=c("Measured", "Treatment", "Sex"))
+
+aovCombinedCondition <- aov(resid_postmass_calculated ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data=diet_data, na.action=na.omit)
+summary(aovCombinedCondition)
+HSD.test(aovCombinedCondition, "resid_postmass_calculated")
+pairw.anova(y=diet_data$resid_postmass_calculated, x=diet_data$Treatment, method="scheffe")
+
+#field site 1 = WaCo 2011
+#field site 2 = TLDavis 2011
+#field site 3 = TLDavis 2010
+ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
+                    ymax=resid_postmass_calculated + dataSum$se,
+                    ymin=resid_postmass_calculated - dataSum$se)) +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Beetle Body Condition (residuals)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2011", "Washingon_Co_2011"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x=element_blank(),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
+
+
+############
+#Elytra
+############
+dataSum <- summarySE(diet_data, measurevar="ElytraLength_mm", groupvars=c("Measured", "Treatment", "Sex"))
+
+#elytra length plot for both laboratory and field-caught beetles
+ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
+                    ymax=ElytraLength_mm + dataSum$se,
+                    ymin=ElytraLength_mm - dataSum$se)) +
+  xlab("Lab Starvation Treatment or Field Site") +
+  ylab("Elytra length (mm)") + 
+  geom_point(position=position_dodge(width=0.3), size=2.1) +
+  geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        #strip.text.x=element_text(size=10),
+        strip.text.x = element_blank(),
+        strip.text.y=element_text(size=10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        #legend.key = element_blank())
+        legend.position = "bottom",
+        legend.background = element_rect(size = 0.1, linetype = "solid", colour = "black") )
 
 ############
 #Protein (no significant factors, so no plots)
