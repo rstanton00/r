@@ -40,8 +40,8 @@ diet_data <- diet_data[diet_data$Treatment != 'TL_Davis_2010',]
 
 #tell R that certain data are categorical
 diet_data$Sex <- factor(diet_data$Sex, levels = c("M", "F"), labels = c("Male", "Female"))
-diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011"))
-#diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "TL_Davis_2010", "Washingon_Co_2011", "TL_Davis_2011"))
+diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011"))
+#diet_data$Treatment <- factor(diet_data$Treatment, levels = c("a", "b", "c", "TL_Davis_2010", "Washington_Co_2011", "TL_Davis_2011"))
 diet_data$Measured <- factor(diet_data$Measured, levels = c("PO_P", "Melaniz"))
 
 #add columns of transformed data
@@ -53,13 +53,13 @@ diet_data["ln_po"] <- c(log2(diet_data$zPO_avg_abs_min))
 diet_data["sqrt_p"] <- c(log2(diet_data$z_Protein_avg_adjusted_mg_ml))
 
 #create subsets of data for when we do analysis only on lab or field data
-lab_data <- subset(diet_data, diet_data$Treatment != 'TL_Davis_2011' & diet_data$Treatment != 'Washingon_Co_2011')
+lab_data <- subset(diet_data, diet_data$Treatment != 'TL_Davis_2011' & diet_data$Treatment != 'Washington_Co_2011')
 #re-declare treatment levels for lab data as we only had a,b,c treatments in lab
 lab_data$Treatment <- factor(lab_data$Treatment, levels = c("a", "b", "c"))
 
 field_data <- subset(diet_data, diet_data$Treatment != 'a' & diet_data$Treatment != 'b' & 
                        diet_data$Treatment != 'c')
-field_data$Treatment <- factor(field_data$Treatment, levels = c("TL_Davis_2010", "TL_Davis_2011", "Washingon_Co_2011"))
+field_data$Treatment <- factor(field_data$Treatment, levels = c("TL_Davis_2010", "TL_Davis_2011", "Washington_Co_2011"))
 
 #set options for all linear models/anovas
 options(contrasts=c("contr.sum","contr.poly"))
@@ -285,7 +285,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
                     ymin=resid_postmass_calculated - dataSum$se)) +
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   xlab("Lab Starvation Treatment or Field Site") +
   ylab("Post-Experiment Body Condition (residuals)") + 
   theme_bw() +
@@ -303,7 +303,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Post-Experiment Body Condition (residuals)") + xlab("Lab Starvation Treatment") +
   theme_bw() +
@@ -346,7 +346,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex
   ylab("Protein Concentration in Hemolymph (mg/ml)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   theme_bw() +
   theme(text = element_text(size=10),
         #strip.text.x=element_text(size=10),
@@ -362,7 +362,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Protein Concentration in Hemolymph (mg/ml)") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -405,7 +405,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
   ylab("Phenoloxidase (abs/min)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1, na.rm = TRUE) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   theme_bw() +
   theme(text = element_text(size=10),
         #strip.text.x=element_text(size=10),
@@ -421,7 +421,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex,
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=zPO_avg_abs_min, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Phenoloxidase (abs/min)") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -477,7 +477,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_AGV, pch=Sex,
   ylab("Average Grey Value") + 
   geom_point(position=position_dodge(width=0.3), size = 2.1, na.rm=TRUE) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   scale_y_continuous(trans = "reverse") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -498,7 +498,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex
   ylab("Protein Concentration in Hemolymph (mg/ml)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   theme_bw() +
   theme(text = element_text(size=10),
         #strip.text.x=element_text(size=10),
@@ -515,7 +515,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=z_Protein_avg_adjusted_mg_ml, pch=Sex
 #BOXPLOT
 ggplot(diet_data, aes(x=factor(Treatment), y=z_AGV, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AdLib.", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
   ylab("Average Grey Value") + xlab("Lab Starvation Treatment or Field Site") +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -541,7 +541,7 @@ ggplot(diet_data, aes(x=factor(Treatment), y=z_AGV, pch=Sex, fill=Sex)) +
 ######################################
 #need to create new dataset not including tl davis 2010 in order to get some models working
 field_data_no_tl2010 <- field_data[field_data$Treatment != 'TL_Davis_2010',]
-field_data_no_tl2010$Treatment <- factor(field_data_no_tl2010$Treatment, levels = c("TL_Davis_2011", "Washingon_Co_2011"))
+field_data_no_tl2010$Treatment <- factor(field_data_no_tl2010$Treatment, levels = c("TL_Davis_2011", "Washington_Co_2011"))
 
 #body mass
 model <- lm(ln_postmass_mg ~ Sex + Treatment + Measured + Sex:Treatment + Sex:Measured + Measured:Treatment + Sex:Treatment:Measured, data = field_data_no_tl2010, na.action=na.omit)
@@ -578,7 +578,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
                     ymin=ElytraLength_mm - dataSum$se)) +
   geom_point(position=position_dodge(width=0.25), size=2.5) +
   geom_errorbar(position=position_dodge(width=0.25), width=0.25) +
-  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washington_Co_2011"), labels=c("FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Elytra Length (mm)") + xlab("Field Site") +
   theme_bw() +
@@ -593,7 +593,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
 #BOXPLOT
 ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washington_Co_2011"), labels=c("FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Elytra Length (mm)") + xlab("Field Site") +
   theme_bw() +
@@ -630,7 +630,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   ylab("Field Beetle Body Condition (residuals)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washington_Co_2011"), labels=c("FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -647,7 +647,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
 #BOXPLOT
 ggplot(field_data_no_tl2010, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex, fill=Sex)) +
   geom_boxplot() +
-  scale_x_discrete(breaks = c("TL_Davis_2011", "Washingon_Co_2011"), labels=c("FS1", "FS2")) +
+  scale_x_discrete(breaks = c("TL_Davis_2011", "Washington_Co_2011"), labels=c("FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   ylab("Field Beetle Body Condition (residuals)") + xlab("Field Site") +
   theme_bw() +
@@ -685,7 +685,7 @@ ggplot(dataSum, aes(x=factor(Treatment), y=resid_postmass_calculated, pch=Sex,
   ylab("Beetle Body Condition (residuals)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2011", "Washingon_Co_2011"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "TL_Davis_2011", "Washington_Co_2011"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2")) +
   facet_wrap(~ Measured, labeller = to_string_trt) +
   theme_bw() +
   theme(text = element_text(size=10),
@@ -713,7 +713,8 @@ ggplot(dataSum, aes(x=factor(Treatment), y=ElytraLength_mm, pch=Sex,
   ylab("Elytra length (mm)") + 
   geom_point(position=position_dodge(width=0.3), size=2.1) +
   geom_errorbar(position=position_dodge(width=0.3), width=0.21) +
-  scale_x_discrete(breaks = c("a", "b", "c", "Washingon_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  scale_x_discrete(breaks = c("a", "b", "c", "Washington_Co_2011", "TL_Davis_2011", "TL_Davis_2010"), labels=c("Fed AL", "Fed 2x", "Fed 0x", "FS1", "FS2", "FS3")) +
+  facet_wrap(~ Measured, labeller = to_string_trt) +
   theme_bw() +
   theme(text = element_text(size=10),
         #strip.text.x=element_text(size=10),
